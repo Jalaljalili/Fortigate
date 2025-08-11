@@ -1,0 +1,62 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.3
+    container_name: elasticsearch
+    environment:
+      - node.name=es-node
+      - discovery.type=single-node
+      - cluster.name=es-cluster
+      - network.host=0.0.0.0
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - xpack.monitoring.collection.enabled=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - 'esdata:/usr/share/elasticsearch/data'
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.0.3
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      - SERVER_NAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:9.0.3
+    container_name: logstash
+    ports:
+      - "514:514/udp"  # for syslog input
+      - "5044:5044"     # Beats input (Filebeat)
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./GeoLite2-City.mmdb:/usr/share/logstash/GeoLite2-City.mmdb
+      - ./fortigate-log-downloader/logs:/usr/share/logstash/fortigate-logs
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+    depends_on:
+      - elasticsearch
+  
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:9.0.3
+    user: root
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./fortigate-log-downloader/logs:/var/log/fortigate-logs:ro
+    depends_on:
+      - logstash
+
+volumes:
+  esdata:
+    driver: local
