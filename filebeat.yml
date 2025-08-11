@@ -1,0 +1,15 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/fortigate-logs/*.log
+  # The log format is key-value, so we can use the `kv` processor.
+  # This can be done in Filebeat or Logstash. Doing it in Logstash is a common pattern for more complex parsing.
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+# Output to Logstash
+output.logstash:
+  hosts: ["logstash:5044"]
