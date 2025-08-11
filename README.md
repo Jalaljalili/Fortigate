@@ -1,4 +1,4 @@
-# FortiGate 2FA Memory Log Downloader & ELK Stack Visualizer
+# FortiGate Memory Log Downloader & ELK Stack Visualizer
 
 This project provides a complete solution for downloading user authentication logs from a FortiGate firewall's memory, parsing them, and visualizing the data using the Elastic (ELK) Stack. It's particularly useful for FortiGate devices that store logs only in memory and lack direct syslog VDOM support.
 
