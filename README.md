@@ -52,5 +52,14 @@ This project provides a complete solution for downloading user authentication lo
 * Elasticsearch stores the structured log data in time-based indices.
 * Kibana provides the visualization layer to create dashboards for monitoring and analysis.
 
+## Excel Report ✅
+ parses logs and writes a single Excel sheet with exactly:
+* User
+* Login_Count (number of auth-logon events)
+* First_Login (earliest logon time)
+* Last_Logout (latest logout time)
+
+
+
 ### 📄 License
 This project is open-source and available under the MIT License.
